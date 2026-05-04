@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root { 
+        --ks-green: #a0c95f; 
+        --ks-dark: #333; 
+        --ks-bg: #f8f9fa;
+    }
+    
+    body { background-color: var(--ks-bg); }
+
+    /* Metric Card Styling */
+    .metric-card {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        text-align: center;
+        border-bottom: 4px solid var(--ks-green);
+        transition: transform 0.3s ease;
+    }
+    .metric-card:hover { transform: translateY(-5px); }
+    .metric-label { font-size: 0.85rem; color: #6c757d; font-weight: 600; text-transform: uppercase; }
+    .metric-value { font-size: 1.8rem; font-weight: 800; color: var(--ks-dark); display: block; }
+
+    /* Unified Container Style */
+    .form-container { 
+        background: white; 
+        padding: 30px; 
+        border-radius: 20px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        height: 100%; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-title { 
+        font-weight: 700; 
+        font-size: 1.25rem;
+        color: var(--ks-dark);
+        border-left: 5px solid var(--ks-green); 
+        padding-left: 15px; 
+        margin-bottom: 5px; 
+    }
+
+    .section-subtitle {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 25px;
+        padding-left: 20px;
+    }
+    
+    .chart-box { flex-grow: 1; min-height: 400px; }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h2 { font-weight: 800; color: var(--ks-dark); }
+</style>
+
+<div class="container py-5">
+    <!-- Main Page Header -->
+    <div class="page-header text-center">
+        <h2 class="display-6">Market Insights</h2>
+        <p class="text-muted">Global Platform Analytics</p>
+    </div>
+
+    <!-- Animated Metric Cards Row -->
+    <div class="row mb-5">
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Total Projects</span>
+                <span class="metric-value counter" data-target="{{ total_projects|replace(',', '') }}">{{ total_projects }}</span>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Categories</span>
+                <span class="metric-value counter" data-target="{{ total_categories }}">{{ total_categories }}</span>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Min Goal</span>
+                <span class="metric-value">${{ min_goal }}</span>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Max Goal</span>
+                <span class="metric-value">${{ max_goal }}</span>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Min Pledged</span>
+                <span class="metric-value">${{ min_pledged }}</span>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="metric-card">
+                <span class="metric-label">Max Pledged</span>
+                <span class="metric-value">${{ max_pledged }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 1: Category and Country -->
+    <div class="row mb-4 d-flex align-items-stretch">
+        <div class="col-lg-7">
+            <div class="form-container">
+                <h5 class="section-title">Category Performance</h5>
+                <p class="section-subtitle">Success rates across different niches</p>
+                <div id="chart1" class="chart-box"></div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="form-container">
+                <h5 class="section-title">Success by Country</h5>
+                <p class="section-subtitle">Geographic distribution of funded projects</p>
+                <div id="chart4" class="chart-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Funding Scatter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-container">
+                <h5 class="section-title">Funding Goal vs. Reality</h5>
+                <p class="section-subtitle">Correlation between targets and actual pledged amounts</p>
+                <div id="chart2" class="chart-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Seasonal Trend -->
+    <div class="row">
+        <div class="col-12">
+            <div class="form-container">
+                <h5 class="section-title">Seasonal Success Trend</h5>
+                <p class="section-subtitle">How project outcomes vary throughout the year</p>
+                <div id="chart3" class="chart-box"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Counter Animation Script ---
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText.replace(/,/g, '');
+            const speed = 200; // Lower is faster
+            const inc = target / speed;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + inc).toLocaleString();
+                setTimeout(updateCount, 1);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        };
+        // Reset to 0 before starting
+        counter.innerText = '0';
+        updateCount();
+    });
+
+    // --- Plotly Charts ---
+    var config = { responsive: true, displayModeBar: false };
+    
+    function safePlot(id, graphData) {
+        if (graphData) {
+            Plotly.newPlot(id, graphData.data, graphData.layout, config);
+        }
+    }
+
+    safePlot('chart1', {{ graphJSON1 | safe }});
+    safePlot('chart2', {{ graphJSON2 | safe }});
+    safePlot('chart3', {{ graphJSON3 | safe }});
+    safePlot('chart4', {{ graphJSON4 | safe }});
+</script>
+{% endblock %}

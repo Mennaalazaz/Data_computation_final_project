@@ -1,0 +1,149 @@
+:root {
+    --ks-dark: #333333;  /* Dark charcoal from the logo */
+    --ks-green: #a0c95f; /* Lime-green from the badge */
+    --ks-bg: #f8f9fa;    /* Light grey background */
+    --ks-white: #ffffff;
+}
+
+body { 
+    margin: 0; 
+    padding: 0; 
+    background-color: var(--ks-bg);
+    color: var(--ks-dark);
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* --- Navigation --- */
+.navbar {
+    background-color: var(--ks-dark);
+    border-bottom: 3px solid var(--ks-green);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.8) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--ks-green) !important;
+}
+
+/* --- Form Container --- */
+.form-container { 
+    background: var(--ks-white); 
+    padding: 40px; 
+    border-radius: 20px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
+    border-top: 8px solid var(--ks-dark);
+    margin-bottom: 50px;
+}
+
+/* --- Logo & Header --- */
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo-image { 
+    width: 180px; 
+    height: auto;
+    /* Visual Zoom effect requested */
+    transform: scale(1.3); 
+    display: block;
+    margin: 20px auto; 
+    transition: transform 0.3s ease;
+}
+
+.form-header h2 { 
+    font-weight: 800; 
+    color: var(--ks-dark); 
+    margin-top: 30px;
+    letter-spacing: -1px;
+}
+
+/* --- Section Dividers --- */
+/* This matches the <span> tags in your new form */
+.section-divider {
+    border-top: 2px solid #edf2f7;
+    margin: 40px 0 25px;
+    position: relative;
+}
+
+.section-divider span {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--ks-white);
+    padding: 0 15px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a0aec0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* --- Inputs & Labels --- */
+.form-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #4a5568;
+}
+
+.form-control, .form-select {
+    border: 2px solid #edf2f7;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--ks-green);
+    box-shadow: 0 0 0 4px rgba(160, 201, 95, 0.15);
+    outline: none;
+}
+
+/* --- Buttons --- */
+.btn-kickstarter { 
+    background-color: var(--ks-green); 
+    color: white; 
+    font-weight: 800; 
+    font-size: 1.1rem;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-kickstarter:hover { 
+    background-color: #8db551;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(160, 201, 95, 0.3);
+    color: white;
+}
+
+/* --- Prediction Result Card --- */
+.prediction-result {
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    background: #fdfdfd;
+    transition: all 0.5s ease;
+}
+
+.prediction-result h3 {
+    margin: 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

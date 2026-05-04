@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="form-container">
+                <div class="form-header">
+                    <img src="{{ url_for('static', filename='logo.png') }}" class="logo-image" alt="Logo">
+                    <h2>Campaign Analyzer</h2>
+                </div>
+
+                <form action="/predict" method="POST">
+                    <div class="row">
+                        <!-- Name -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Project Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter name..." required>
+                        </div>
+
+                        <!-- Blurb -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Blurb <span class="text-danger">*</span></label>
+                            <textarea name="blurb" class="form-control" rows="2" placeholder="Short description..." required></textarea>
+                        </div>
+
+                        <!-- Goal -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Funding Goal (USD) <span class="text-danger">*</span></label>
+                            <input type="number" name="goal" class="form-control" placeholder="5000" required>
+                        </div>
+
+                        <!-- Country Choice -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Target Country <span class="text-danger">*</span></label>
+                            <select name="country" class="form-select">
+                                <option value="US">United States</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="CA">Canada</option>
+                                <option value="AU">Australia</option>
+                                <option value="DE">Germany</option>
+                            </select>
+                        </div>
+
+                        <!-- Staff Pick Choice -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Is this a Staff Pick?</label>
+                            <select name="staff_pick" class="form-select">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+
+                        <!-- Launch Date -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Launch Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="launched_at" class="form-control" required>
+                        </div>
+
+                        <!-- Deadline -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Deadline <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="deadline" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-kickstarter w-100 mt-4">Generate Prediction</button>
+                </form>
+
+                {% if prediction_text %}
+                <div class="mt-4 p-4 rounded text-center" style="background: #f8f9fa; border: 2px solid {{ result_color }}">
+                    <h3 style="color: {{ result_color }}; font-weight: 700;">{{ prediction_text }}</h3>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
