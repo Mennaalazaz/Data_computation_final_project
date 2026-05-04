@@ -5,6 +5,7 @@ A full-stack machine learning application that predicts the success of Kickstart
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.0+-orange.svg)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ---
@@ -45,29 +46,23 @@ This data-driven web application helps creators make informed decisions before l
 ## 📁 Project Structure
 
 ```
-COMPUTATION_FINAL_PROJECT/
+DATA_COMPUTATION_FINAL/
+│
+├── Dockerfile                          # Docker configuration for production
+├── .dockerignore                       # Files to exclude from Docker build
+├── requirements.txt                    # Project dependencies
 │
 ├── data/
-│   └── kickstarter_data_with_features.csv    # Processed dataset with engineered features
+│   └── kickstarter_data_with_features.csv    # Processed dataset
 │
 ├── EDA_Modeling/
-│   ├── Data_Computation.ipynb                # Jupyter notebook for EDA & model training
-│   └── kickstarter_model.pkl                 # Serialized SVM model (scikit-learn)
+│   ├── Data_Computation.ipynb           # Jupyter notebook for EDA
+│   └── kickstarter_model.pkl            # Serialized SVM model
 │
-├── kickstarter_app/
-│   ├── app.py                                # Flask backend application
-│   │
-│   ├── templates/
-│   │   ├── base.html                         # Base template with shared layout
-│   │   ├── index.html                        # Prediction form interface
-│   │   └── dashboard.html                    # Analytics dashboard with Plotly charts
-│   │
-│   └── static/
-│       ├── css/                              # Custom stylesheets
-│       ├── images/                           # Logo and visual assets
-│       └── js/                               # JavaScript for interactivity
-│
-└── venv/                                     # Python virtual environment
+└── kickstarter_app/
+    ├── app.py                           # Flask backend (updated for Docker paths)
+    ├── templates/                       # HTML interfaces
+    └── static/                          # CSS/JS and assets
 ```
 
 ---
@@ -102,8 +97,136 @@ The backend automatically extracts and calculates:
 - Categorical encodings (country, currency, staff pick)
 
 ---
-
 ## 🛠️ Installation & Setup
+ 
+You can run this application using either **Docker** (recommended for production) or **manual installation** (recommended for development).
+ 
+---
+ 
+## 🐋 Docker Setup (Recommended)
+ 
+### **Prerequisites:**
+- Docker installed on your system ([Get Docker](https://docs.docker.com/get-docker/))
+- Docker Compose (optional, comes with Docker Desktop)
+### **Option 1: Quick Start with Docker**
+ 
+**Step 1: Clone the Repository**
+```bash
+git clone https://github.com/MalakMohammedAbouElFetouh/Data_Computation_Final_Project.git
+cd Data_Computation_Final_Project
+```
+ 
+**Step 2: Build the Docker Image**
+```bash
+docker build -t kickstarter-predictor .
+```
+ 
+**Step 3: Run the Container**
+```bash
+docker run -d -p 5000:5000 --name kickstarter-app kickstarter-predictor
+```
+ 
+**Step 4: Access the Application**
+Open your browser and navigate to:
+```
+http://localhost:5000/
+```
+ 
+### **Option 2: Using Docker Compose**
+ 
+Create a `docker-compose.yml` file in the project root:
+ 
+```yaml
+version: '3.8'
+ 
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./EDA_Modeling:/app/EDA_Modeling
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+```
+ 
+Then run:
+```bash
+docker-compose up -d
+```
+ 
+### **Docker Commands Reference**
+ 
+```bash
+# Build the image
+docker build -t kickstarter-predictor .
+ 
+# Run container (detached mode)
+docker run -d -p 5000:5000 --name kickstarter-app kickstarter-predictor
+ 
+# Run container (interactive mode with logs)
+docker run -p 5000:5000 --name kickstarter-app kickstarter-predictor
+ 
+# View logs
+docker logs kickstarter-app
+ 
+# Follow logs in real-time
+docker logs -f kickstarter-app
+ 
+# Stop the container
+docker stop kickstarter-app
+ 
+# Start the container
+docker start kickstarter-app
+ 
+# Remove the container
+docker rm kickstarter-app
+ 
+# Access container shell
+docker exec -it kickstarter-app /bin/bash
+ 
+# Rebuild after code changes
+docker build -t kickstarter-predictor . --no-cache
+docker stop kickstarter-app && docker rm kickstarter-app
+docker run -d -p 5000:5000 --name kickstarter-app kickstarter-predictor
+```
+ 
+### **Production Deployment with Docker**
+ 
+For production environments:
+ 
+```bash
+# Build with production tag
+docker build -t kickstarter-predictor:production .
+ 
+# Run with resource limits and restart policy
+docker run -d \
+  -p 80:5000 \
+  --name kickstarter-prod \
+  --restart=always \
+  --memory="512m" \
+  --cpus="1.0" \
+  kickstarter-predictor:production
+```
+ 
+### **Docker Environment Variables**
+ 
+You can customize the application using environment variables:
+ 
+```bash
+docker run -d \
+  -p 5000:5000 \
+  -e FLASK_ENV=production \
+  -e FLASK_DEBUG=0 \
+  --name kickstarter-app \
+  kickstarter-predictor
+```
+ 
+---
+
+## 💻 Manual Installation (Development)
 
 ### **Prerequisites:**
 - Python 3.8 or higher
@@ -111,8 +234,8 @@ The backend automatically extracts and calculates:
 
 ### **Step 1: Clone the Repository**
 ```bash
-git clone https://github.com/MalakMohammedAbouElFetouh/new-project.git
-cd new-project
+git clone https://github.com/MalakMohammedAbouElFetouh/Data_Computation_Final_Project.git
+cd Data_Computation_Final_Project
 ```
 
 ### **Step 2: Create Virtual Environment**
@@ -222,6 +345,51 @@ Accuracy: 70%
 - Does not account for marketing efforts post-launch
 - Cannot predict viral campaigns or black swan events
 
+
+---
+ 
+## 🐛 Troubleshooting
+ 
+### **Docker Issues**
+ 
+**Port already in use:**
+```bash
+# Use a different port
+docker run -d -p 8080:5000 --name kickstarter-app kickstarter-predictor
+# Access at http://localhost:8080
+```
+ 
+**Container fails to start:**
+```bash
+# Check logs
+docker logs kickstarter-app
+ 
+# Verify files exist
+docker exec -it kickstarter-app ls -la /app/data
+docker exec -it kickstarter-app ls -la /app/EDA_Modeling
+```
+ 
+**Permission issues:**
+```bash
+# Rebuild with proper permissions
+docker build -t kickstarter-predictor . --no-cache
+```
+ 
+### **Manual Installation Issues**
+ 
+**Module not found errors:**
+```bash
+# Ensure virtual environment is activated
+# Reinstall dependencies
+pip install -r requirements.txt --force-reinstall
+```
+ 
+**Model file not found:**
+```bash
+# Verify file paths match app.py configuration
+# Ensure kickstarter_model.pkl is in EDA_Modeling/
+```
+ 
 ---
 
 ## 🚧 Future Improvements
